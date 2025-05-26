@@ -1,6 +1,6 @@
 #FROM ubuntu:20.04
 
-FROM nimafrj/2004openfhe:1.0.3
+FROM nimafrj/2204openfhe:1.0.3
 
 WORKDIR /usr/src/app
 # Install dependencies
@@ -37,27 +37,23 @@ RUN apt-get update && apt-get install -y \
 #     make install && \
 #     ldconfig
 
-WORKDIR /app
+WORKDIR /bdt
 # Copy the source code
-COPY FHE-enc-modified.cpp /app/FHE-enc.cpp
+COPY . .
 
 
 RUN cp /usr/src/app/openfhe-development/CMakeLists.User.txt ./CMakeLists.txt
-RUN echo "add_executable(fhe-enc FHE-enc.cpp)" >> CMakeLists.txt
+RUN echo "add_executable(fhe-enc fhe-enc.cpp)" >> CMakeLists.txt
 
-RUN mkdir /app/build /app/results /app/data /app/private_data
-WORKDIR /app/build
+RUN mkdir -p /bdt/build /bdt/build/results /bdt/build/data /bdt/build/private_data /bdt/build/timing /bdt/build/cryptocontext
+WORKDIR /bdt/build
 RUN cmake ..
 RUN make
-RUN mv fhe-enc ../
-WORKDIR /app
-RUN rm -rf ./build CMakeLists.txt FHE-enc.cpp
 
 # Compile the application
 # RUN g++ -o FHE-enc FHE-enc.cpp -fopenmp -std=c++17 -lOPENFHEpke -lOPENFHEcore -pthread
 
 # Create directories
-RUN mkdir -p data results private_data
 
 # Set permissions
 RUN chmod +x fhe-enc

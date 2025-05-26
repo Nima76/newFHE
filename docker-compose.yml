@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+
+  # FHE ENCRYPTOR
+  fhe-encryptor:
+    build: ./encryptor
+    container_name: fhe-enc
+    volumes:
+      - ./encryptor/build/data:/bdt/build/data
+      - encrypted_data:/bdt/build/results
+      - cryptocontext:/bdt/build/cryptocontext
+      - private_key:/bdt/build/private_data
+      - ./encryptor/build/timing/:/bdt/build/timing
+    command: tail -f /dev/null
+    networks:
+      - soteria_network
+
+
+  # FHE MAIN
+  fhe-main:
+    build: ./main
+    container_name: fhe-main
+    volumes:
+      - analytics_results:/bdt/build/results
+      - encrypted_data:/bdt/build/data
+      - ./main/build/timing/:/bdt/build/timing
+      - cryptocontext:/bdt/build/cryptocontext
+      
+    command: tail -f /dev/null  
+    networks:
+      - soteria_network
+  
+  
+  # FHE DECRYPTOR
+  fhe-decryptor:
+    build: ./decryptor
+    container_name: fhe-dec
+    command: tail -f /dev/null
+    volumes:
+      - analytics_results:/bdt/build/data
+      - cryptocontext:/bdt/build/cryptocontext/
+      - private_key:/bdt/build/private_data
+      - ./decryptor/build/timing/:/bdt/build/timing
+     
+    networks:
+      - soteria_network
+
+
+networks:
+  soteria_network:
+    name: "soteria_network"
+    external: true
+
+
+volumes:
+  encrypted_data:
+  private_key:
+  analytics_results:
+  cryptocontext:
+
+

@@ -1,23 +1,25 @@
 #FROM ubuntu:20.04
 
-FROM nimafrj/2004openfhe:1.0.3
+FROM nimafrj/2204openfhe:1.0.3
 
 WORKDIR /usr/src/app
 # Install dependencies
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
-    cmake \
+    autoconf \
     git \
-    wget \
-    unzip \
-    python3 \
-    python3-pip \
-    libgmp-dev \
-    libntl-dev \
-    doxygen \
-    graphviz \
-    && rm -rf /var/lib/apt/lists/*
+    g++ \
+    make \
+    libboost-all-dev \
+    wget
+
+
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.6/cmake-3.27.6-linux-x86_64.sh \
+    && chmod +x cmake-3.27.6-linux-x86_64.sh \
+    && ./cmake-3.27.6-linux-x86_64.sh --skip-license --prefix=/usr/local \
+    && rm cmake-3.27.6-linux-x86_64.sh
+
 
 # Working directory
 
@@ -37,25 +39,26 @@ RUN apt-get update && apt-get install -y \
 #     make install && \
 #     ldconfig
 
-WORKDIR /app
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+ENV TERM xterm-256color
+RUN echo 'export PS1="\[\e[36m\](docker@\h) \[\e[1;33m\][\[\e[38;5;130m\]\$(date +%H:%M:%S)\[\e[38;5;167m\] \u:\[\e[38;5;228m\] \w\[\e[1;33m\]]\[\e[m\]\n$ "' > /root/.bashrc
+
+
+
+WORKDIR /bdt
 # Copy the source code
-COPY FHE-main-modified.cpp /app/FHE-main.cpp
+COPY . .
 
 
 RUN cp /usr/src/app/openfhe-development/CMakeLists.User.txt ./CMakeLists.txt
-RUN echo "add_executable(fhe-main FHE-main.cpp)" >> CMakeLists.txt
+RUN echo "add_executable(fhe-main fhe-main.cpp)" >> CMakeLists.txt
 
-RUN mkdir /app/build /app/results /app/data /app/private_data
-WORKDIR /app/build
+RUN mkdir -p /bdt/build /bdt/build/results /bdt/build/data /bdt/build/private_data /dbt/build/cryptocontext
+WORKDIR /bdt/build
 RUN cmake ..
 RUN make
-RUN mv fhe-main ../
-WORKDIR /app
-RUN rm -rf ./build CMakeLists.txt FHE-main.cpp
-
 
 # Create directories
-RUN mkdir -p data results private_data
 
 # Set permissions
 RUN chmod +x fhe-main

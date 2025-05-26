@@ -1,0 +1,13 @@
+Operation,TimeInMilliseconds
+CryptoContext_Creation,160
+Key_Generation,457
+Keys_Serialization,32
+Tree_Loading,0
+Tree_Encoding,29
+Tree_Encryption,584
+Tree_Serialization,38
+Data_Loading,0
+Data_Encoding,25
+Data_Encryption,584
+Data_Serialization,39
+Total_Encryption_Process,1952

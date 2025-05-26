@@ -1,0 +1,7 @@
+Operation,TimeInMilliseconds
+Context_Loading,63
+SecretKey_Loading,35
+Ciphertext_Loading,35
+Decryption,24
+Result_Saving,0
+Total_Decryption_Process,159

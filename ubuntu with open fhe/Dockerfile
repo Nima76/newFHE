@@ -1,21 +1,16 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 WORKDIR /usr/src/app
 # Install dependencies
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
-    cmake \
+    autoconf \
     git \
-    wget \
-    unzip \
-    python3 \
-    python3-pip \
-    libgmp-dev \
-    libntl-dev \
-    doxygen \
-    graphviz \
-    && rm -rf /var/lib/apt/lists/*
+    g++ \
+    make \
+    libboost-all-dev \
+    wget
 
 # Working directory
 
