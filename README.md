@@ -68,12 +68,12 @@ The test command performs the following steps:
    - `--depth 8`: Sets the multiplicative depth
    - `--modulus 786433`: Sets the plaintext modulus
 
-   Users can modify these parameters to encrypt datasets with different security levels and performance characteristics.
+   **Users can modify these parameters to encrypt datasets with different security levels and performance characteristics.**
 
 5. The encryption process generates output in Docker volumes:
    - Encrypted data is stored in the `encrypted_data` volume (accessible to `fhe-main`)
    - Private keys are stored in the `private_key` volume (accessible to `fhe-dec`)
-   - Cryptocontext is stored in the `cryptocontext` volume (accessible to `fhe-dec`)
+   - Cryptocontext is stored in the `cryptocontext` volume (accessible to `fhe-dec` and 'fhe-main')
 
 6. Runs the main processing container (`fhe-main`) which:
    - Automatically reads the encrypted data from the `encrypted_data` volume
@@ -82,7 +82,7 @@ The test command performs the following steps:
 
 7. Runs the decryption container (`fhe-dec`) which:
    - Reads results from the `analytics_results` volume
-   - Uses the private key and cryptocontext to decrypt the results
+   - Uses the private key and cryptocontext to decrypt the results from 'cryptocontext' and 'private_key' volumes
    - Outputs the decrypted results
 
 This workflow eliminates the need to manually copy files between containers as all data transfer happens through the mounted volumes.
@@ -97,14 +97,9 @@ The timing data can be found in each component's directory:
 ```
 
 For example:
-- Encryption timing: `/bdt/build/timing/` in the `fhe-enc` container
-- Processing timing: `/bdt/build/timing/` in the `fhe-main` container
-- Decryption timing: `/bdt/build/timing/` in the `fhe-dec` container
-
-This timing information is valuable for:
-- Benchmarking different parameter configurations
-- Optimizing performance bottlenecks
-- Comparing execution time across different hardware setups
+- Encryption timing: `/encryptor/build/timing/` in the `fhe-enc` container
+- Processing timing: `/main/build/timing/` in the `fhe-main` container
+- Decryption timing: `/decryptor/build/timing/` in the `fhe-dec` container
 
 ## Architecture
 
@@ -120,9 +115,9 @@ This application uses Docker containers that are built on top of a base OpenFHE 
 
 ### Important Note on Modifications
 
-If you want to modify the application or enable GPU acceleration service:
+**If you want to modify the application or enable GPU acceleration service:**
 
-1. First modify the "ubuntu with openfhe" directory
+1. First modify the "ubuntu with openfhe" directory to create new iamge based on you modyfied OpenFHE library
 2. Then rebuild and replace this image in the other components
 
 Alternatively, you can use the pre-built image:
@@ -132,17 +127,6 @@ nimafrj/2204openfheuniman
 
 This image was previously built based on the repository [FHE-HA-Integration](https://github.com/JPBultel/FHE-HA-Integration).
 
-## Why Docker?
-
-The OpenFHE library compilation process is time-consuming. Using Docker allows us to:
-- Build the OpenFHE library once
-- Create a base image that all components can use
-- Ensure consistent environments across development and deployment
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-Please see the LICENSE file for details.
