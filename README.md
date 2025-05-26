@@ -122,7 +122,7 @@ This application uses Docker containers that are built on top of a base OpenFHE 
 
 Alternatively, you can use the pre-built image:
 ```
-nimafrj/2204openfheuniman
+nimafrj/2204openfheuniman:1.0.3
 ```
 
 This image was previously built based on the repository [FHE-HA-Integration](https://github.com/JPBultel/FHE-HA-Integration).
