@@ -10,8 +10,7 @@ This project implements fully homomorphic encryption (FHE) using the OpenFHE lib
 
 - Git
 - Docker and Docker Compose
-- At least 4GB of available RAM
-- 10GB of free disk space
+
 
 ## Quick Start
 
