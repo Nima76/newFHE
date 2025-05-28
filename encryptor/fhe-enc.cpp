@@ -407,7 +407,7 @@ int main(int argc, char* argv[])
     auto startTreeLoad = high_resolution_clock::now();
 	  try {
         // path from the tree file
-        std::string filePath = "data/tree.txt";
+        std::string filePath = DATAFOLDER + "/tree.txt";
 
         // reading the data from the input file
         std::vector<std::vector<int64_t>> treeData = readTreeData(filePath);
@@ -493,7 +493,7 @@ int main(int argc, char* argv[])
     auto startDataLoad = high_resolution_clock::now();
     try {
         // path from the client data file
-        std::string filePath2 = "data/data.txt";
+        std::string filePath2 = DATAFOLDER + "/data.txt";
 
         // reading the data from the input file
         std::vector<std::vector<int64_t>> dataData = readTreeData(filePath2);
