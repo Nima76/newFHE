@@ -1,6 +1,6 @@
 #FROM ubuntu:20.04
 
-FROM nimafrj/openfhe1.0.3:uniman
+FROM nimafrj/openfhe1.0.3:gpu
 
 WORKDIR /usr/src/app
 # Install dependencies

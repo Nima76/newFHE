@@ -1,8 +1,8 @@
 #FROM ubuntu:20.04
 
-FROM nimafrj/openfhe1.0.3:uniman
+FROM nimafrj/openfhe1.0.3:gpu
 
-WORKDIR /usr/src/app
+WORKDIR mk/app
 # Install dependencies
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
