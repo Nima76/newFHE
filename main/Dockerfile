@@ -1,6 +1,6 @@
 #FROM ubuntu:20.04
 
-FROM nimafrj/2204openfhe:1.0.3
+FROM nimafrj/openfhe1.0.3:uniman
 
 WORKDIR /usr/src/app
 # Install dependencies
@@ -50,7 +50,7 @@ WORKDIR /bdt
 COPY . .
 
 
-RUN cp /usr/src/app/openfhe-development/CMakeLists.User.txt ./CMakeLists.txt
+RUN cp /usr/src/app/openfhe-uniman/CMakeLists.User.txt ./CMakeLists.txt
 RUN echo "add_executable(fhe-main main2.cpp)" >> CMakeLists.txt
 
 RUN mkdir -p /bdt/build /bdt/build/results /bdt/build/data /bdt/build/private_data /bdt/build/cryptocontext

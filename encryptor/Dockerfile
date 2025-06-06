@@ -46,7 +46,7 @@ WORKDIR /bdt
 COPY . .
 
 
-RUN cp /usr/src/app/openfhe-development/CMakeLists.User.txt ./CMakeLists.txt
+RUN cp /usr/src/app/openfhe-uniman/CMakeLists.User.txt ./CMakeLists.txt
 RUN echo "add_executable(fhe-enc enc2.cpp)" >> CMakeLists.txt
 
 RUN mkdir -p /bdt/build /bdt/build/results /bdt/build/data /bdt/build/private_data /bdt/build/timing /bdt/build/cryptocontext

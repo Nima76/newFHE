@@ -42,7 +42,7 @@ WORKDIR /bdt
 COPY . .
 
 
-RUN cp /usr/src/app/openfhe-development/CMakeLists.User.txt ./CMakeLists.txt
+RUN cp /usr/src/app/openfhe-uniman/CMakeLists.User.txt ./CMakeLists.txt
 #RUN echo "add_executable(fhe-dec fhe-dec.cpp)" >> CMakeLists.txt
 RUN echo "add_executable(fhe-dec dec2.cpp)" >> CMakeLists.txt
 
