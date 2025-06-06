@@ -7,8 +7,8 @@ services:
     build: ./encryptor
     container_name: fhe-enc
     volumes:
-      - ./encryptor/build/data:/bdt/build/data
-      - encrypted_data:/bdt/build/results
+      - /home/nima/paper/datasets/:/bdt/build/tee_data
+      #- encrypted_data:/bdt/build/results
       - cryptocontext:/bdt/build/cryptocontext
       - private_key:/bdt/build/private_data
       - ./encryptor/build/timing/:/bdt/build/timing
@@ -22,9 +22,9 @@ services:
     build: ./main
     container_name: fhe-main
     volumes:
-      - analytics_results:/bdt/build/results
-      - encrypted_data:/bdt/build/data
-      - ./main/build/timing/:/bdt/build/timing
+      #- analytics_results:/bdt/build/results
+      #- encrypted_data:/bdt/build/data
+
       - cryptocontext:/bdt/build/cryptocontext
       
     command: tail -f /dev/null  
@@ -38,10 +38,10 @@ services:
     container_name: fhe-dec
     command: tail -f /dev/null
     volumes:
-      - analytics_results:/bdt/build/data
+      #- analytics_results:/bdt/build/data
       - cryptocontext:/bdt/build/cryptocontext/
       - private_key:/bdt/build/private_data
-      - ./decryptor/build/timing/:/bdt/build/timing
+      
      
     networks:
       - soteria_network

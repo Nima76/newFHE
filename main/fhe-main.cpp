@@ -1,11 +1,11 @@
+//HOMOMORPHIC EVALUATION OF BINARY DECISION TREE FROM OPENFHE : SERVER SIDE
+
 #include "openfhe.h"
 
 #include <iostream>
 #include <filesystem>
 #include <string>
 #include <cmath>
-#include <chrono>
-#include <fstream>
 
 // header files needed for serialization
 #include "ciphertext-ser.h"
@@ -15,13 +15,10 @@
 
 using namespace lbcrypto;
 namespace fs = std::filesystem;
-using namespace std::chrono;
 
 const std::string DATAFOLDER = "data";
 const std::string RESULTSFOLDER = "results";
-const std::string CRYPTOCONTEXTFOLDER = "cryptocontext";
-const std::string TIMINGFOLDER = "timing";
-const std::string TIMING_FILENAME = "timing_evaluation.csv";
+const std::string CRYPTOCONTEXT = "cryptocontext";
 
 //binary decision trees
 typedef struct bdt
@@ -30,17 +27,6 @@ typedef struct bdt
 	bdt* left = nullptr;
 	bdt* right = nullptr;
 } bdt;
-
-// Writing timing information to file
-void writeTimingToFile(const std::string& filename, const std::string& operation, double timeInMs) {
-  std::ofstream outfile(TIMINGFOLDER + "/" + filename, std::ios::app);
-  if (!outfile) {
-      std::cerr << "Could not open timing file for writing" << std::endl;
-      return;
-  }
-  outfile << operation << "," << timeInMs << std::endl;
-  outfile.close();
-}
 
 //binary decision trees encoded as plaintexts
 typedef struct bdt_pt
@@ -416,47 +402,25 @@ Ciphertext<DCRTPoly> encrypted_result(CryptoContext<DCRTPoly> cc, bdt_ct tree, b
 
 int main()
 {
-    // Initialize timing file with header
-    std::ofstream timingInit(TIMINGFOLDER + "/" + TIMING_FILENAME);
-    timingInit << "Operation,TimeInMilliseconds" << std::endl;
-    timingInit.close();
-    
-    // Record total execution time
-    auto startTotal = high_resolution_clock::now();
-    
 	//getting the depth
-	auto startDepth = high_resolution_clock::now();
 	int depth = calculateDepth(DATAFOLDER);
-	auto stopDepth = high_resolution_clock::now();
-	double depthTime = duration_cast<milliseconds>(stopDepth - startDepth).count();
-	writeTimingToFile(TIMING_FILENAME, "Depth_Calculation", depthTime);
+	//int depth = atoi(argv[1]);
 	
 	//getting the crypto-context and the the public keys
-	auto startCC = high_resolution_clock::now();
 	CryptoContext<DCRTPoly> cc;
-    if (!Serial::DeserializeFromFile(CRYPTOCONTEXTFOLDER + "/cryptocontext.txt", cc, SerType::BINARY)) {
-        std::cerr << "I cannot read serialization from " << CRYPTOCONTEXTFOLDER + "/cryptocontext.txt" << std::endl;
+    if (!Serial::DeserializeFromFile(CRYPTOCONTEXT + "/cryptocontext.txt", cc, SerType::BINARY)) {
+        std::cerr << "I cannot read serialization from " << CRYPTOCONTEXT + "/cryptocontext.txt" << std::endl;
         return 1;
     }
-    auto stopCC = high_resolution_clock::now();
-    double ccTime = duration_cast<milliseconds>(stopCC - startCC).count();
-    writeTimingToFile(TIMING_FILENAME, "CryptoContext_Deserialization", ccTime);
-    
     std::cout << "The cryptocontext has been deserialized." << std::endl;
 
-    auto startPK = high_resolution_clock::now();
     PublicKey<DCRTPoly> pk;
     if (Serial::DeserializeFromFile(DATAFOLDER + "/key-public.txt", pk, SerType::BINARY) == false) {
         std::cerr << "Could not read public key" << std::endl;
         return 1;
     }
-    auto stopPK = high_resolution_clock::now();
-    double pkTime = duration_cast<milliseconds>(stopPK - startPK).count();
-    writeTimingToFile(TIMING_FILENAME, "PublicKey_Deserialization", pkTime);
-    
     std::cout << "The public key has been deserialized." << std::endl;
     
-    auto startEMK = high_resolution_clock::now();
     std::ifstream emkeys(DATAFOLDER + "/key-eval-mult.txt", std::ios::in | std::ios::binary);
     if (!emkeys.is_open()) {
         std::cerr << "I cannot read serialization from " << DATAFOLDER + "/key-eval-mult.txt" << std::endl;
@@ -466,53 +430,31 @@ int main()
         std::cerr << "Could not deserialize the eval mult key file" << std::endl;
         return 1;
     }
-    auto stopEMK = high_resolution_clock::now();
-    double emkTime = duration_cast<milliseconds>(stopEMK - startEMK).count();
-    writeTimingToFile(TIMING_FILENAME, "EvalMultKey_Deserialization", emkTime);
-    
     std::cout << "Deserialized the eval mult keys." << std::endl;
     
     //getting the encrypted binary decision tree
-    auto startTree = high_resolution_clock::now();
     bdt_ct *p_tree = new bdt_ct();
     ebdt_deserialize(p_tree, "encrypted_tree", depth);
     bdt_ct encrypted_tree = *p_tree;
-    auto stopTree = high_resolution_clock::now();
-    double treeTime = duration_cast<milliseconds>(stopTree - startTree).count();
-    writeTimingToFile(TIMING_FILENAME, "Tree_Deserialization", treeTime);
     
     //getting the encrypted client data
-    auto startData = high_resolution_clock::now();
     bdt_ct *p_data = new bdt_ct();
     ebdt_deserialize(p_data, "encrypted_data", depth);
     bdt_ct encrypted_data = *p_data;
-    auto stopData = high_resolution_clock::now();
-    double dataTime = duration_cast<milliseconds>(stopData - startData).count();
-    writeTimingToFile(TIMING_FILENAME, "Data_Deserialization", dataTime);
     
     //homomorphic evaluation of the binary decision tree on the client data
-    auto startHE = high_resolution_clock::now();
 	Ciphertext<DCRTPoly> output_ciphertext = encrypted_result(cc, encrypted_tree, encrypted_data, depth, pk);
-	auto stopHE = high_resolution_clock::now();
-    double heTime = duration_cast<milliseconds>(stopHE - startHE).count();
-    writeTimingToFile(TIMING_FILENAME, "Homomorphic_Evaluation", heTime);
 	
 	//serializing the final result
-	auto startSerResult = high_resolution_clock::now();
 	if (!Serial::SerializeToFile(RESULTSFOLDER + "/" + "output_ciphertext.txt", output_ciphertext, SerType::BINARY)) {
         std::cerr << "Error writing serialization of output ciphertext to output_ciphertext.txt" << std::endl;
         return 1;
     }
-    auto stopSerResult = high_resolution_clock::now();
-    double serResultTime = duration_cast<milliseconds>(stopSerResult - startSerResult).count();
-    writeTimingToFile(TIMING_FILENAME, "Result_Serialization", serResultTime);
-    
     std::cout << "The output ciphertext has been serialized." << std::endl;
-
-    auto stopTotal = high_resolution_clock::now();
-    double totalTime = duration_cast<milliseconds>(stopTotal - startTotal).count();
-    writeTimingToFile(TIMING_FILENAME, "Total_Evaluation_Process", totalTime);
-
+    
+    //////////////////////////////
+    //////////////////////////////
+      
     //main return value
     return 0;
 }

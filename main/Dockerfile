@@ -51,9 +51,9 @@ COPY . .
 
 
 RUN cp /usr/src/app/openfhe-development/CMakeLists.User.txt ./CMakeLists.txt
-RUN echo "add_executable(fhe-main fhe-main.cpp)" >> CMakeLists.txt
+RUN echo "add_executable(fhe-main main2.cpp)" >> CMakeLists.txt
 
-RUN mkdir -p /bdt/build /bdt/build/results /bdt/build/data /bdt/build/private_data /dbt/build/cryptocontext
+RUN mkdir -p /bdt/build /bdt/build/results /bdt/build/data /bdt/build/private_data /bdt/build/cryptocontext
 WORKDIR /bdt/build
 RUN cmake ..
 RUN make

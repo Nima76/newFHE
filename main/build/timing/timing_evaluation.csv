@@ -1,10 +1,10 @@
 Operation,TimeInMilliseconds
 Depth_Calculation,0
-CryptoContext_Deserialization,62
-PublicKey_Deserialization,40
-EvalMultKey_Deserialization,56
-Tree_Deserialization,271
-Data_Deserialization,272
-Homomorphic_Evaluation,95760
+CryptoContext_Deserialization,32
+PublicKey_Deserialization,20
+EvalMultKey_Deserialization,30
+Tree_Deserialization,143
+Data_Deserialization,144
+Homomorphic_Evaluation,49203
 Result_Serialization,1
-Total_Evaluation_Process,96466
+Total_Evaluation_Process,49577
