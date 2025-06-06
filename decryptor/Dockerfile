@@ -7,7 +7,6 @@ WORKDIR /usr/src/app
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
-    cmake \
     git \
     wget \
     unzip \
@@ -18,6 +17,13 @@ RUN apt-get update && apt-get install -y \
     doxygen \
     graphviz \
     && rm -rf /var/lib/apt/lists/*
+
+
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.6/cmake-3.27.6-linux-x86_64.sh \
+    && chmod +x cmake-3.27.6-linux-x86_64.sh \
+    && ./cmake-3.27.6-linux-x86_64.sh --skip-license --prefix=/usr/local \
+    && rm cmake-3.27.6-linux-x86_64.sh
+
 
 # Working directory
 
